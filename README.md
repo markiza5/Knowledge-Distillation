@@ -1,42 +1,65 @@
-# זיקוק ידע לסיווג תאי דם
+# Knowledge Distillation for Blood Cell Classification
 
-פרויקט בקורס Deep Learning הבודק האם Knowledge Distillation משפר מסווג קטן לעומת אימון רגיל של אותה ארכיטקטורה.
+An academic Deep Learning project investigating whether output-based Knowledge Distillation improves a small CNN compared with conventional training of the same architecture on BloodMNIST.
 
-- נתונים: BloodMNIST עם שמונה מחלקות ותמונות RGB בגודל 224 על 224.
-- מורה: DenseNet-121 מאומן מראש על BloodMNIST.
-- תלמיד מתוכנן: CNN קטן; השוואה לאימון רגיל ובדיקת טמפרטורות ומשקלי זיקוק.
-- מדד ראשי: Balanced Accuracy; בנוסף Accuracy, ניתוח לפי מחלקה, גודל מודל וזמן חיזוי.
-- האימונים יבוצעו במחשב של השותפה בעלת ה־GPU; שני השותפים יוכלו לנתח תוצאות.
+- **Data:** eight-class BloodMNIST, RGB images at 224 × 224 pixels, official train/validation/test splits.
+- **Fixed teacher:** pretrained DenseNet-121 checkpoint with seed `71397589`.
+- **Planned student:** four convolutional blocks, global average pooling, and an eight-class linear head.
+- **Primary metric:** Balanced Accuracy; supplementary Accuracy, per-class analysis, model size, and inference latency.
+- **Current status:** environment and pretrained teacher verified. Student training and KD experiments have not been implemented or run.
 
-## מצב הפרויקט
+## One central notebook
 
-קיימים מחברת חקירת נתונים ראשונית וקובצי הנתונים המקומיים. בסביבה הקיימת נבדקו Python 3.12.7, טעינת ספריות הנתונים, תקינות תלויות וחישובי GPU בסיסיים. טרם אומתו משקולות המורה, וטרם מומשו אימוני התלמיד או מחברת ניתוח עצמאית.
+Open [KD project notebook](notebooks/KD%20project%20notebook.ipynb). It contains the initial data exploration and the teacher-analysis chapter in English. Future completed baseline/KD experiments will be documented in the same notebook. Shared implementation code stays in `src/`.
 
-תיעוד ההתקנה שלהלן אינו מפעיל אימונים. התקנה מלאה חדשה בסביבה נקייה עדיין לא נבדקה.
+| Mode | What runs | Required environment and artifacts |
+|---|---|---|
+| `analysis` — default | Saved data profile, sample preview, recomputed teacher metrics, charts and confusion matrices | Analysis requirements and versioned result files; no raw dataset, weights or GPU |
+| `full` | Additionally loads the local dataset and repeats the initial exploration | Full requirements and local raw data; optional teacher reevaluation also needs weights and CUDA |
 
-## קובצי התלויות
+The first code cell controls execution:
 
-| קובץ | שימוש |
+```python
+RUN_MODE = "analysis"
+ALLOW_DOWNLOADS = False
+REEVALUATE_TEACHER = False
+```
+
+Select **Restart Kernel and Run All** after changing modes. Analysis rejects download/reevaluation flags. Full mode still does not download weights or reevaluate teachers unless explicitly requested. There is no student training code in either route.
+
+### What the notebook shows
+
+1. Data split counts, class names, original first-eight-training-image preview, and training class distribution.
+2. Verification protocol and the single fixed KD teacher.
+3. Validation/test Accuracy and Balanced Accuracy, recomputed from saved CSV predictions.
+4. Source comparison and reference variability across three published weight checkpoints.
+5. Fixed-teacher test confusion matrices, counts and row-normalized percentages.
+6. Per-class recall, support, error pairs, interpretation and limitations.
+7. Explicitly gated optional teacher reevaluation and placeholders for future student/KD results.
+
+The two additional published checkpoints are reference runs of the same architecture. They are not an ensemble, and the best test score is not used to choose the teacher.
+
+## Requirements files
+
+| File | Purpose |
 |---|---|
-| `requirements-analysis.txt` | ספריות למחברות ניתוח, קריאת טבלאות ויצירת גרפים; ללא PyTorch ו־CUDA |
-| `requirements.txt` | הסביבה המלאה; כוללת את קובץ הניתוח ומוסיפה ספריות נתונים ומודלים |
-| `requirements-lock-gpu.txt` | תמונת גרסאות של הסביבה המותקנת ב־Windows עם GPU נכון ל־16 בנובמבר 2026, כולל תלויות עקיפות |
+| `requirements-analysis.txt` | Notebook analysis, tables and charts without model libraries |
+| `requirements.txt` | Full environment; includes the analysis requirements and adds data/model libraries |
+| `requirements-lock-gpu.txt` | Snapshot of installed versions from the verified Windows GPU environment, including indirect dependencies |
 
-הגרסאות הישירות הקיימות נשמרו. `timm==1.0.31` ו־`safetensors==0.8.0` הותקנו ונבדקו ב־16 בנובמבר 2026, ללא שינוי גרסאות הספריות הקודמות. קובץ הנעילה עודכן וכולל גם אותן. נבדקו יצירת DenseNet-121 עם שמונה פלטים ומשקולות אקראיות, forward ב־GPU על קלט בגודל 1 על 3 על 224 על 224, ושמירה וטעינה מדויקת של tensor באמצעות safetensors ב־CPU וב־GPU. גם pip check ובדיקה מדומה של requirements.txt עברו. הבדיקות אינן אימון ואינן אימות של משקולות המורה שפורסמו; משקולות אלו טרם הורדו ונבדקו. שחזור התקנה מלאה בסביבה נקייה עדיין לא נבדק.
+The GPU snapshot includes `timm==1.0.31` and `safetensors==0.8.0`. They passed import, GPU DenseNet forward and tensor save/load checks without changing previously installed package versions. The pretrained checkpoints were subsequently verified separately. Reinstallation of the entire GPU snapshot into a fresh environment has not been tested.
 
-## יצירת סביבה מקומית
+## Partner setup: analysis only
 
-הפקודות מיועדות ל־PowerShell ב־Windows, מתוך תיקיית הפרויקט לאחר clone או pull מ־Git. מומלץ להשתמש ב־Python 3.12; גרסת הייחוס שנבדקה היא 3.12.7. מערכת ההפעלה של השותף טרם נבדקה; במערכת אחרת נדרשת התאמת נתיב Python והתקנת PyTorch.
+Use Python 3.12 where possible; the development Python is 3.12.7. The following commands are for PowerShell on Windows, from the project root after clone/pull. The partner's actual operating system has not been inspected; adjust interpreter paths on other platforms.
 
-לסביבה חדשה בלבד:
+For a **new** environment only:
 
 ```powershell
 py -3.12 -m venv .venv
 ```
 
-אם `.venv` כבר קיימת, משתמשים בה ולא יוצרים אותה מחדש. הפקודות הבאות פונות ישירות ל־Python שבתוכה, ולכן אין צורך ב־Activate או בשינוי מדיניות PowerShell. ב־VS Code בוחרים את `.venv\Scripts\python.exe` כמפרש וכקרנל המחברת.
-
-## התקנה לשותף לצורך ניתוח תוצאות
+If `.venv` already exists, use it rather than recreating it. Then:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements-analysis.txt
@@ -44,34 +67,41 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m jupyter lab
 ```
 
-המסלול מיועד למחברות שיקראו CSV ותוצאות שמורות, בלי לטעון מודלים. הוא אינו מבטיח שכל מחברת בפרויקט תעבוד: `notebooks/01_explore_bloodmnist.ipynb` הקיימת משתמשת ב־medmnist, שדורשת גם torch ו־torchvision. כדי להריץ אותה או קוד שטוען מודלים, יש להתקין את הסביבה המלאה במסלול CPU שלהלן. מחברת ניתוח התוצאות הנפרדת עדיין בתכנון.
+Select this environment's Python as the notebook kernel. Keep `RUN_MODE="analysis"` and both opt-in flags `False`. No PyTorch, CUDA, raw-image download or model-weight download is needed for this route. The installation commands install Python packages; notebook analysis itself does not access the network.
 
-## התקנה מלאה במחשב האימון עם NVIDIA
+On Windows, keep the environment path reasonably short. During verification, installing JupyterLab into a deeply nested temporary project path encountered the Windows path-length limit; a fresh environment at a shorter temporary path was used instead, without changing Windows settings.
 
-במחשב שנבדק מותקנים RTX 4050 Laptop עם 6GB VRAM, ‏PyTorch 2.13.0+cu130 ו־torchvision 0.28.0+cu130. אם הסביבה הזאת כבר פועלת, אין צורך להתקין את PyTorch מחדש; משלימים את התלויות דרך `requirements.txt`.
+Required analysis files:
 
-בסביבת Windows חדשה עם דרייבר NVIDIA תואם, מתקינים תחילה את גרסת CUDA:
+- `notebooks/KD project notebook.ipynb`
+- `src/teacher_analysis.py`
+- `results/teacher_reference.json`
+- All six `results/teacher_<seed>_<split>_predictions.csv` files
+- `results/data_summary.json`
+- `results/figures/data_samples.png`
+
+The notebook raises a clear error if inputs are missing or inconsistent; it never silently runs inference to regenerate them. The saved preview contains only eight illustrative training images, not the full dataset.
+
+## Full setup on the NVIDIA training machine
+
+Verified hardware: RTX 4050 Laptop with 6GB VRAM. The existing environment has PyTorch `2.13.0+cu130` and torchvision `0.28.0+cu130`. Do not reinstall these if the verified environment is already working.
+
+For a new compatible Windows/NVIDIA environment, first install the CUDA build:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install torch==2.13.0 torchvision==0.28.0 --index-url https://download.pytorch.org/whl/cu130
-```
-
-לאחר מכן מתקינים את הסביבה המלאה ומאמתים אותה:
-
-```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m pip check
-.\.venv\Scripts\python.exe -c "import torch; print(torch.__version__); print('CUDA available:', torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'No CUDA device')"
-.\.venv\Scripts\python.exe -c "import timm, safetensors; print('timm:', timm.__version__); print('safetensors:', safetensors.__version__)"
+.\.venv\Scripts\python.exe -c "import torch; print(torch.__version__); print('CUDA available:', torch.cuda.is_available())"
 ```
 
-מצופה ש־CUDA יהיה זמין במחשב האימון. אם אינו זמין, בודקים מפרש Python, חבילת PyTorch ודרייבר לפני אימון. אין מעבר שקט לאימון CPU. מחוץ למחשב שנבדק יש להתאים את ההתקנה לפי מערכת ההפעלה והדרייבר, ולא להניח שפקודת CUDA אחת מתאימה לכל מחשב.
+Check driver/platform compatibility on another machine rather than assuming this command works everywhere. `requirements.txt` pins public PyTorch versions without a CUDA suffix; installing the appropriate CPU/CUDA build first determines the compute platform.
 
-הגרסאות ב־`requirements.txt` אינן כוללות סיומת CUDA כדי לתמוך גם במסלול CPU. כשגרסת `+cu130` התואמת כבר מותקנת, היא מקיימת את דרישת הגרסה הציבורית. בחירת הבנייה נעשית במפורש בפקודת ההתקנה הראשונה.
+Set `RUN_MODE="full"` to load existing `data/bloodmnist_224.npz` and repeat the original exploration. Downloads remain disabled unless `ALLOW_DOWNLOADS=True` is explicitly set. To intentionally reevaluate teachers, also set `REEVALUATE_TEACHER=True`; local checkpoints and CUDA must be available. Reevaluation writes a new timestamped results directory and does not overwrite the saved analysis results. No student training is triggered.
 
-## סביבה מלאה ללא GPU
+### Optional full CPU environment
 
-לשותף שירצה להריץ את מחברת חקירת הנתונים או לבדוק קוד מודלים ב־CPU, בסביבת Windows חדשה:
+For local raw-data exploration or model-code inspection without CUDA:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install torch==2.13.0 torchvision==0.28.0 --index-url https://download.pytorch.org/whl/cpu
@@ -79,33 +109,45 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip check
 ```
 
-אין צורך ב־CUDA במסלול הזה. אם מותקנת כבר גרסת GPU ורוצים לעבור ל־CPU, אין להניח שפקודה ללא reinstall תחליף אותה; עדיף לבדוק בסביבה חדשה ונפרדת. אין כוונה לבצע אימונים מלאים במחשב השותף.
+Use a separate new environment when changing compute builds. Raw-data exploration can run on CPU; the existing teacher-verification script intentionally requires CUDA, so keep teacher reevaluation disabled in this route. Full training is planned only on the GPU machine.
 
-## תוצאות משותפות ו־Git
+## Saved results and provenance
 
-- משתפים CSV, הגדרות, מדדים וגרפים כדי ששניכם תוכלו לנתח את אותן ריצות.
-- לכל קובץ תוצאות מצרפים method, seed, מזהה הרצה והגדרות, כדי לשמור על קשר לניסוי המקורי.
-- קובצי requirements, README, קוד ומחברות נשמרים ב־Git. תיקיות `.venv`, ‏`data` ו־`checkpoints` נשארות מחוץ ל־Git בהתאם ל־`.gitignore`.
-- סביבת Python מקומית לכל שותף; לא מעתיקים `.venv` בין מחשבים.
-- אחרי הוספת ספרייה מעדכנים את קובץ התלויות הישירות המתאים. ספרייה שמשמשת ניתוח בלבד נכנסת ל־`requirements-analysis.txt`; תלויות מודלים נכנסות ל־`requirements.txt`.
-- לא מחליפים את רשימות ההתקנה לשותף ב־pip freeze ממחשב ה־GPU: הוא כולל תלויות חומרה ותלויות עקיפות שאינן דרושות לניתוח.
+The fixed teacher achieved **98.2223% test Balanced Accuracy** and **98.4215% test Accuracy**, matching the explicit source Balanced Accuracy. Three published checkpoints reproduce the reported reference mean **98.4756%** and sample SD **0.2251 percentage points**. These are inference checks of previously trained weights, not locally repeated teacher training.
 
-## שחזור תמונת סביבת ה־GPU
+- [Teacher verification report](docs/teacher_verification.md)
+- `results/teacher_reference.json`: measured metrics, class mapping, environment and checkpoint manifests.
+- `results/teacher_source_reference.json`: pinned upstream code references.
+- `configs/teachers.json`: pinned repositories, revisions and file checksums.
+- `src/verify_teacher.py`: offline evaluation using local data/weights and CUDA.
+- `tests/test_teacher_verification.py`: full-environment verification tests.
+- `tests/test_teacher_analysis.py`: analysis-only validation tests.
 
-`requirements-lock-gpu.txt` הוא snapshot מהסביבה הקיימת, ולא קובץ התקנה לשותף או הוכחה להתקנה נקייה שנבדקה. הוא מכיל חבילות ייעודיות ל־Windows וגרסאות torch עם סיומת `+cu130`.
-
-לשחזור תמונת המצב בסביבת Windows חדשה ונפרדת, מתקינים קודם את PyTorch ו־torchvision ממקור cu130 כמתואר לעיל, ואז:
+Run analysis tests without model dependencies:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-lock-gpu.txt
-.\.venv\Scripts\python.exe -m pip check
+.\.venv\Scripts\python.exe -B -m unittest discover -s tests -p test_teacher_analysis.py -v
 ```
 
-המסלול משחזר את רשימת הגרסאות הנוכחית בלבד, כולל timm ו־safetensors שנבדקו מקומית. לאחר שינוי נוסף בספריות יש להפיק snapshot חדש ולתעד מה אומת. הורדת משקולות, בדיקת המורה ואימון הם שלבים נפרדים מהתקנת ספריות.
+Run the entire test suite in the full environment:
 
-## מקורות התקנה
+```powershell
+.\.venv\Scripts\python.exe -B -m unittest discover -s tests -v
+```
 
-- [פורמט קובצי requirements והכללת קובץ נוסף](https://pip.pypa.io/en/stable/reference/requirements-file-format/)
-- [התקנת PyTorch לפי מערכת הפעלה ופלטפורמת חישוב](https://pytorch.org/get-started/locally/)
-- [גרסאות timm ב־PyPI](https://pypi.org/project/timm/)
-- [גרסאות safetensors ב־PyPI](https://pypi.org/project/safetensors/)
+See `docs/notebook_verification.md` for the isolated analysis execution check and its limits. The English notebook is the central narrative; the earlier teacher-verification report remains a historical supporting record.
+
+## Git and reproducibility
+
+Commit code, notebooks, requirements, README, configs, small JSON/CSV results, and the small saved preview. Both partners need the same result files. Do not commit `.venv/`, raw `data/`, or `checkpoints/`; they are excluded by `.gitignore`. Do not copy a virtual environment between machines.
+
+Add direct analysis dependencies to `requirements-analysis.txt`; add model dependencies to `requirements.txt`. Keep the GPU snapshot separate from partner requirements. The notebook addition uses the existing analysis requirements without adding packages.
+
+To restore the current Windows GPU package snapshot, first install the matching CUDA PyTorch build, then install `requirements-lock-gpu.txt` and run `pip check`. A package snapshot alone does not guarantee reproducible research: retain seeds, run settings, data identity, checkpoint revisions and saved predictions as well.
+
+## References
+
+- [pip requirements format](https://pip.pypa.io/en/stable/reference/requirements-file-format/)
+- [PyTorch installation by platform](https://pytorch.org/get-started/locally/)
+- [Fixed teacher model card](https://huggingface.co/sdoerrich97/colorist_densenet121_bloodmnist_s71397589)
+- [MedMNIST data](https://zenodo.org/records/10519652)

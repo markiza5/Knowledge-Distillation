@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "python_version": "3.12.7",
+  "heavy_packages_absent": [
+    "torch",
+    "torchvision",
+    "timm",
+    "medmnist",
+    "safetensors"
+  ],
+  "raw_data_and_weights_present": false,
+  "external_network_blocked": true,
+  "model_imports_blocked": true,
+  "protected_data_access_blocked": true,
+  "analysis_cells_executed": 12,
+  "embedded_charts": 6,
+  "full_mode_missing_data_guard": "PASS",
+  "full_teacher_reevaluation_performed": false,
+  "training_performed": false,
+  "verified_utc": "2026-11-16T12:42:31.775699+00:00",
+  "verification_environment": "Separate clean Windows venv at a short temporary path",
+  "dependency_installation": "requirements-analysis.txt only; indirect versions constrained to the existing package snapshot; no model packages installed",
+  "analysis_unit_tests_passed": 6,
+  "pip_check": "No broken requirements found.",
+  "network_guard_scope": "Python audit hooks block external socket connects/DNS; loopback kernel communication is allowed. Not an OS-wide firewall.",
+  "original_project_environment_modified": false
+}

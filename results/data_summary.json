@@ -1,0 +1,69 @@
+{
+  "dataset": "BloodMNIST",
+  "input_shape": [
+    224,
+    224,
+    3
+  ],
+  "class_names": [
+    "basophil",
+    "eosinophil",
+    "erythroblast",
+    "immature granulocytes(myelocytes, metamyelocytes and promyelocytes)",
+    "lymphocyte",
+    "monocyte",
+    "neutrophil",
+    "platelet"
+  ],
+  "source_md5": "b718ff6835fcbdb22ba9eacccd7b2601",
+  "source_sha256": "534bfb674fcfcfecf691aaca942ced2181d3affae9528a645ae51d12e9f3e1a1",
+  "counts": {
+    "train": 11959,
+    "val": 1712,
+    "test": 3421
+  },
+  "class_counts": {
+    "train": [
+      852,
+      2181,
+      1085,
+      2026,
+      849,
+      993,
+      2330,
+      1643
+    ],
+    "val": [
+      122,
+      312,
+      155,
+      290,
+      122,
+      143,
+      333,
+      235
+    ],
+    "test": [
+      244,
+      624,
+      311,
+      579,
+      243,
+      284,
+      666,
+      470
+    ]
+  },
+  "first_ten_training_labels": [
+    7,
+    3,
+    6,
+    6,
+    7,
+    6,
+    2,
+    2,
+    7,
+    2
+  ]
+}

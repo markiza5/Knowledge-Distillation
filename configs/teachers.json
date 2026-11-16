@@ -1,0 +1,72 @@
+{
+  "primary_teacher_seed": 71397589,
+  "purpose_of_other_seeds": "reference evaluation only; no ensemble or teacher selection",
+  "teachers": [
+    {
+      "repo_id": "sdoerrich97/colorist_densenet121_bloodmnist_s71397589",
+      "revision": "c6a3d14f886a5a9d9e5feb3c3146cc7da6464283",
+      "seed": 71397589,
+      "files": {
+        "config.json": {
+          "sha256": "0c3a054e87099e23e60241e223914b8f7d6ed90639a5adf8057b6f2dfeeb230c",
+          "bytes": 853,
+          "hub_lfs_sha256": null
+        },
+        "README.md": {
+          "sha256": "273ad74b8f1ae0bdf804967db8f0f9bd3cc57c8c9eb054f3a23c9e9a6f4f6418",
+          "bytes": 4233,
+          "hub_lfs_sha256": null
+        },
+        "model.safetensors": {
+          "sha256": "2c694fd30cc84b4ba41335b1d0fa7144b3e813ecb7e7803740a7097f4938d3f5",
+          "bytes": 28266984,
+          "hub_lfs_sha256": "2c694fd30cc84b4ba41335b1d0fa7144b3e813ecb7e7803740a7097f4938d3f5"
+        }
+      }
+    },
+    {
+      "repo_id": "sdoerrich97/colorist_densenet121_bloodmnist_s133560673",
+      "revision": "10ed0b1609842ea4f0ba031e1bfc12a9ac9a156e",
+      "seed": 133560673,
+      "files": {
+        "config.json": {
+          "sha256": "6683c5ed8684bf3c0112ac75e6e20ad359413a6634f0d34483a18657492e25b9",
+          "bytes": 854,
+          "hub_lfs_sha256": null
+        },
+        "README.md": {
+          "sha256": "9aefa11fbdc828011772f384b2ec95b7ea990c9f6834713d48946e86251de67d",
+          "bytes": 4236,
+          "hub_lfs_sha256": null
+        },
+        "model.safetensors": {
+          "sha256": "cfc6191869854c8994d666be2c73d2a374da0b0a69b459393dc774355d69e0c8",
+          "bytes": 28266984,
+          "hub_lfs_sha256": "cfc6191869854c8994d666be2c73d2a374da0b0a69b459393dc774355d69e0c8"
+        }
+      }
+    },
+    {
+      "repo_id": "sdoerrich97/colorist_densenet121_bloodmnist_s265017005",
+      "revision": "820902f7886c1348149f811c2bb13b2bcb7d403c",
+      "seed": 265017005,
+      "files": {
+        "config.json": {
+          "sha256": "9163231bc39a6fdc61c0177788a2af6495701b8828387cbeda88a8b374b2964c",
+          "bytes": 854,
+          "hub_lfs_sha256": null
+        },
+        "README.md": {
+          "sha256": "ec044695ba9653c767ab4c0a29560888a01394ae86c5ef86207dd8a30b1d7258",
+          "bytes": 4236,
+          "hub_lfs_sha256": null
+        },
+        "model.safetensors": {
+          "sha256": "d9f24b7ced4bf62452310175c260b4ae13115efa451b170ca442daee034126a1",
+          "bytes": 28266984,
+          "hub_lfs_sha256": "d9f24b7ced4bf62452310175c260b4ae13115efa451b170ca442daee034126a1"
+        }
+      }
+    }
+  ]
+}

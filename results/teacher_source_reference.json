@@ -1,0 +1,22 @@
+{
+  "repository": "sdoerrich97/colorist",
+  "revision": "9c4633d5d530c17ebf46bd0843227491e64f67a0",
+  "files": {
+    "colorist/_factory.py": {
+      "url": "https://github.com/sdoerrich97/colorist/blob/9c4633d5d530c17ebf46bd0843227491e64f67a0/colorist/_factory.py",
+      "sha256": "842257d58618d37a58afdd916ac221ee816604ca46c8fb6d6c34b82701e972ee"
+    },
+    "experiments/train_orig.py": {
+      "url": "https://github.com/sdoerrich97/colorist/blob/9c4633d5d530c17ebf46bd0843227491e64f67a0/experiments/train_orig.py",
+      "sha256": "93ea99b4930d89a5a012d81dd01ea4ffcf5bb17ddcda3ebeec9c6d8f486e9d8d"
+    },
+    "experiments/data/medmnist_dataset.py": {
+      "url": "https://github.com/sdoerrich97/colorist/blob/9c4633d5d530c17ebf46bd0843227491e64f67a0/experiments/data/medmnist_dataset.py",
+      "sha256": "87c60991f95e862be78348f32d4ba243442e33d4004b5220707a481ce3be3c0d"
+    },
+    "experiments/data/_constants.py": {
+      "url": "https://github.com/sdoerrich97/colorist/blob/9c4633d5d530c17ebf46bd0843227491e64f67a0/experiments/data/_constants.py",
+      "sha256": "0bb7fd7c6a609701b7836e9ebd2153d8b950d34af19ba5b9ba4b2d3297e5891e"
+    }
+  }
+}
