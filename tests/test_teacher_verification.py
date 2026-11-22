@@ -27,10 +27,21 @@ class TeacherVerificationTests(unittest.TestCase):
         image = np.zeros((1, 224, 224, 3), dtype=np.uint8)
         image[..., 1] = 128
         image[..., 2] = 255
-        dataset = verification.BloodSplit(image, np.array([[3]]), [0.5, 0.25, 0.75], [0.25, 0.5, 1.0])
-        tensor, label = dataset[0]
+        normalization = {"mean": [0.5, 0.25, 0.75], "std": [0.25, 0.5, 1.0]}
+        with tempfile.TemporaryDirectory() as temporary:
+            data_path = Path(temporary) / "bloodmnist_224.npz"
+            np.savez(
+                data_path,
+                val_images=image,
+                val_labels=np.array([[3]]),
+                test_images=np.zeros_like(image),
+                test_labels=np.array([[5]]),
+            )
+            dataset = verification.load_bloodmnist_split(data_path, "val", normalization)
+            tensor, label = dataset[0]
+        self.assertEqual(tensor.dtype, torch.float32)
         self.assertEqual(tuple(tensor.shape), (3, 224, 224))
-        self.assertEqual(label, 3)
+        self.assertEqual(label.item(), 3)
         self.assertTrue(torch.allclose(tensor[:, 0, 0], torch.tensor([-2.0, (128 / 255 - 0.25) / 0.5, 0.25]), atol=1e-6))
 
     def test_metrics_distinguish_accuracy_from_balanced_accuracy(self):
@@ -42,11 +53,16 @@ class TeacherVerificationTests(unittest.TestCase):
         self.assertEqual(np.asarray(result["confusion_matrix"]).shape, (8, 8))
         self.assertEqual(np.asarray(result["confusion_matrix"]).sum(), 15)
 
-    def test_missing_class_and_wrong_image_resolution_are_rejected(self):
+    def test_missing_class_is_rejected(self):
         with self.assertRaises(ValueError):
             verification.classification_metrics(np.array([0, 1]), np.array([0, 1]))
-        with self.assertRaises(ValueError):
-            verification.BloodSplit(np.zeros((1, 28, 28, 3), dtype=np.uint8), np.array([[0]]), [0, 0, 0], [1, 1, 1])
+
+    def test_bloodmnist_requires_the_224_filename(self):
+        normalization = {"mean": [0, 0, 0], "std": [1, 1, 1]}
+        with tempfile.TemporaryDirectory() as temporary:
+            data_path = Path(temporary) / "bloodmnist.npz"
+            with self.assertRaisesRegex(ValueError, "bloodmnist_224[.]npz"):
+                verification.load_bloodmnist_split(data_path, "val", normalization)
 
     def test_frozen_evaluation_preserves_batchnorm_and_has_no_gradients(self):
         model = nn.Sequential(nn.BatchNorm1d(8), nn.Linear(8, 8, bias=False))
